@@ -16,6 +16,8 @@ import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.JScrollBar;
 
+import Logic.Charity;
+
 
 public class Start {
 
@@ -88,7 +90,7 @@ public class Start {
 		frame.getContentPane().add(txtEmailAddress);
 		txtEmailAddress.setColumns(10);
 		
-		JComboBox cmbCharity = new JComboBox();
+		JComboBox cmbCharity = new JComboBox(Charity.values());
 		cmbCharity.setBounds(30, 52, 138, 22);
 		frame.getContentPane().add(cmbCharity);
 		
@@ -102,6 +104,10 @@ public class Start {
 		frame.getContentPane().add(table);
 		
 		JButton btnSubmit = new JButton("Submit");
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
 		btnSubmit.setBounds(49, 288, 97, 25);
 		frame.getContentPane().add(btnSubmit);
 		
