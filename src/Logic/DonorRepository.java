@@ -19,7 +19,8 @@ public class DonorRepository {
 	{
 		for(Donor donor:donors)
 		{
-			//if(donor.)
+			if(donor.getCharity() == charity)
+				return donor;
 		}
 		
 		return null;

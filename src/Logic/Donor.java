@@ -4,15 +4,15 @@ public class Donor {
 	private String fname;
 	private String lname;
 	private String email;
-	private String charity;
+	private Charity charity;
 	private float amtDonated;
 	
 	
 	
-	public String getCharity() {
+	public Charity getCharity() {
 		return charity;
 	}
-	public void setCharity(String charity) {
+	public void setCharity(Charity charity) {
 		this.charity = charity;
 	}
 	public float getAmtDonated() {
