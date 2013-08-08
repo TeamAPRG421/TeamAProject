@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,14 +8,18 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import java.awt.Font;
-import javax.swing.JTable;
-import javax.swing.JScrollBar;
+import java.text.NumberFormat;
 
-import Logic.Charity;
+import javax.swing.JTable;
+import Logic.*;
+
+import javax.swing.JScrollPane;
+import javax.swing.table.DefaultTableModel;
 
 
 public class Start {
@@ -25,8 +28,11 @@ public class Start {
 	private JTextField txtFirstName;
 	private JTextField txtLastName;
 	private JTextField txtEmailAddress;
-	private JTable table;
 	private JTextField textDonationAmount;
+	private JTable table;
+	
+	private DonorRepository donorRepository;
+	private JComboBox cmbCharity;
 
 	/**
 	 * Launch the application.
@@ -55,6 +61,7 @@ public class Start {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		donorRepository = new DonorRepository();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 727, 408);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -90,7 +97,7 @@ public class Start {
 		frame.getContentPane().add(txtEmailAddress);
 		txtEmailAddress.setColumns(10);
 		
-		JComboBox cmbCharity = new JComboBox(Charity.values());
+		cmbCharity = new JComboBox(Charity.values());
 		cmbCharity.setBounds(30, 52, 138, 22);
 		frame.getContentPane().add(cmbCharity);
 		
@@ -99,13 +106,58 @@ public class Start {
 		lblCharityName.setBounds(30, 13, 116, 26);
 		frame.getContentPane().add(lblCharityName);
 		
-		table = new JTable();
-		table.setBounds(190, 47, 507, 270);
-		frame.getContentPane().add(table);
-		
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String fName = txtFirstName.getText();
+				String lName = txtLastName.getText();
+				String email = txtEmailAddress.getText();
+				String amount = textDonationAmount.getText();
+				Charity charity = (Charity) cmbCharity.getSelectedItem();
+				
+				String message = "";
+				boolean isValid = true;
+				if(fName.isEmpty())
+				{
+					message+="- First Name cannot be blank\n";
+					isValid = false;
+				}
+				if(lName.isEmpty())
+				{
+					message += "- Last Name cannot be blank\n";
+					isValid = false;
+				}
+				if(email.isEmpty())
+				{
+					message += "- Email cannot be blank\n";
+					isValid = false;
+				}
+				else if(Util.isValidEmail(email) == false)
+				{
+					message += "- Email Address is invalid\n";
+					isValid = false;
+				}
+				
+				if(amount.isEmpty())
+				{
+					message += "- Amount cannot be blank\n";
+					isValid = false;
+				}
+				else if(Util.isDecimal(amount)==false)
+				{
+					message += "- Ammount must be numeric\n";
+					isValid = false;
+				}
+				
+				if(isValid == false)
+				{
+					JOptionPane.showMessageDialog(frame, message, "Validation Errors", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				donorRepository.AddDonor(DonorFactory.CreateDonor(fName, lName, email, charity, amount));
+				
+				updateModel();
 			}
 		});
 		btnSubmit.setBounds(49, 288, 97, 25);
@@ -120,9 +172,12 @@ public class Start {
 		lblDonationAmount.setBounds(49, 235, 116, 16);
 		frame.getContentPane().add(lblDonationAmount);
 		
-		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setBounds(676, 141, 21, 48);
-		frame.getContentPane().add(scrollBar);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(195, 13, 506, 325);
+		frame.getContentPane().add(scrollPane);
+		
+		table = new JTable(Util.CreateHeader(new String[]{"First Name","Last Name","Email","Charity","Amount"}));
+		scrollPane.setViewportView(table);
 		
 		JMenuBar menuBar_2 = new JMenuBar();
 		frame.setJMenuBar(menuBar_2);
@@ -136,5 +191,24 @@ public class Start {
 			}
 		});
 		mnFile.add(mntmExit);
+	}
+	
+	private void updateModel()
+	{
+		NumberFormat formatter = NumberFormat.getCurrencyInstance();
+		
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.setRowCount(0);
+		
+		for(Donor d : donorRepository.getAll() )
+		{
+			model.addRow(new Object[]{
+				d.getFname(),
+				d.getLname(),
+				d.getEmail(),
+				d.getCharity().name(),
+				formatter.format(d.getAmtDonated())
+			});
+		}
 	}
 }
