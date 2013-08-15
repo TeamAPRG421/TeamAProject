@@ -1,8 +1,9 @@
 package Logic;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DonorRepository {
+public class DonorRepository  implements Serializable {
 	private ArrayList<Donor> donors;
 	
 	public DonorRepository()

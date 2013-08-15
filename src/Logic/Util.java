@@ -1,17 +1,18 @@
 package Logic;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.swing.table.DefaultTableModel;
 
 public class Util {
 	
-	private static String _fileName = "data.txt";
+	private static String _fileName = ".\\DonorInformation.dat";
 	public static DefaultTableModel CreateHeader(String[] columnNames)
 	{
 		DefaultTableModel model = new DefaultTableModel();
@@ -43,90 +44,34 @@ public class Util {
 		return str.matches(exp);
 	}
 	
-	public static void saveRepository(DonorRepository repo)
+	public static void SaveRepository(DonorRepository repo) 
 	{
-		FileWriter fw = null;
-		BufferedWriter bw = null;
-		try {
-			 
-			File file = new File(_fileName);
- 
-			// if file doesn't exists, then create it
-			if (!file.exists()) {
-				file.createNewFile();
-			}
- 
-			fw = new FileWriter(file.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
-			
-			for(Donor person : repo.getAll())
-			{
-				bw.write(person.getFname() + ",");
-				bw.write(person.getLname() + ",");
-				bw.write(person.getEmail() + ",");
-				bw.write(person.getCharity().name() + ",");
-				bw.write(person.getAmtDonated() + "\n");
-				
-			}
- 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally
-		{
-			try{
-				if(fw != null)
-					fw.close();
-				
-				if(bw != null)
-					bw.close();
-			}
-			catch(Exception e)
-			{
-				
-			}
-		}
 		
+		File file = new File(_fileName);
+		try {
+			String tmpFileName = file.getName();
+			
+			
+						
+			//Serialize the Repository object and save it to a file
+			serialize(file, repo);
+			
+		} catch (IOException e) {
+			//Do nothing for now if there is an error
+		}
 	}
-	
 	
 	public static DonorRepository OpenRepository()
 	{
-		DonorRepository repo = null;
-		FileReader fr = null;
-		BufferedReader br = null;
-		
-		try
-		{
-			fr = new FileReader(_fileName);
-			br = new BufferedReader(fr);
-			repo = new DonorRepository();
-			String sCurrentLine;
-			
-			while ((sCurrentLine = br.readLine()) != null) {
-				String[] items = sCurrentLine.split(",");
-				
-				repo.AddDonor(DonorFactory.CreateDonor(items[0], items[1], items[2], items[3], items[4]));
-				
-			}
+		File file = new File(_fileName);
+		try{
+			return (DonorRepository) deserialize(file);
 		}
 		catch(Exception e)
 		{
+			return null;
 			
 		}
-		finally
-		{
-			try{
-				if(fr != null)
-					fr.close();
-				if(br != null)
-					br.close();
-			}catch(Exception e){}
-		}
-		
-		
-		
-		return repo;
 	}
 	
 	public static Charity CharityFromString(String charityName)
@@ -141,6 +86,38 @@ public class Util {
 		}
 		
 		return null;
+	}
+	
+	
+	private static void serialize(File file, Object obj) throws FileNotFoundException, IOException
+	{
+		FileOutputStream fos;
+		ObjectOutputStream oos;
+		
+		fos = new FileOutputStream(file);
+		oos = new ObjectOutputStream(fos);
+			
+		oos.writeObject(obj);
+		fos.close();
+		oos.close();		
+	}
+	
+	private static Object deserialize(File file) throws FileNotFoundException, IOException, ClassNotFoundException 
+	{
+		Object obj;
+		FileInputStream fis;
+		ObjectInputStream ois;
+
+		fis = new FileInputStream(file);
+		ois = new ObjectInputStream(fis);
+			
+		obj =(ois.readObject());
+			
+		ois.close();
+		fis.close();
+		
+		return obj;
+			
 	}
 	
 }

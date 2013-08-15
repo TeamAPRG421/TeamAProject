@@ -1,6 +1,8 @@
 package Logic;
 
-public class Donor {
+import java.io.Serializable;
+
+public class Donor implements Serializable {
 	private String fname;
 	private String lname;
 	private String email;

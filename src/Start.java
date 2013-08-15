@@ -188,8 +188,32 @@ public class Start {
 		JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+				
 			}
 		});
+		
+		JMenuItem mntmOpen = new JMenuItem("Open");
+		mntmOpen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				DonorRepository dr = Util.OpenRepository();
+				
+				if(dr != null)
+				{
+					donorRepository = dr;
+					updateModel();
+				}
+			}
+		});
+		mnFile.add(mntmOpen);
+		
+		JMenuItem mntmSave = new JMenuItem("Save");
+		mntmSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Util.SaveRepository(donorRepository);
+			}
+		});
+		mnFile.add(mntmSave);
 		mnFile.add(mntmExit);
 	}
 	

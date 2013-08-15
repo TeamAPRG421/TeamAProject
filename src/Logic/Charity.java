@@ -1,6 +1,8 @@
 package Logic;
 
-public enum Charity {
+import java.io.Serializable;
+
+public enum Charity implements Serializable {
 	
 	JDRF,
 	Red_Cross,
