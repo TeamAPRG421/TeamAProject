@@ -32,7 +32,7 @@ public class Start {
 	private JTable table;
 	
 	private DonorRepository donorRepository;
-	private JComboBox cmbCharity;
+	private JComboBox<Charity> cmbCharity;
 
 	/**
 	 * Launch the application.
@@ -97,7 +97,8 @@ public class Start {
 		frame.getContentPane().add(txtEmailAddress);
 		txtEmailAddress.setColumns(10);
 		
-		cmbCharity = new JComboBox(Charity.values());
+		cmbCharity = new JComboBox<Charity>();
+		this.populateCharities();
 		cmbCharity.setBounds(30, 52, 138, 22);
 		frame.getContentPane().add(cmbCharity);
 		
@@ -155,7 +156,7 @@ public class Start {
 					return;
 				}
 				
-				donorRepository.AddDonor(DonorFactory.CreateDonor(fName, lName, email, charity, amount));
+				donorRepository.AddDonor(DonorFactory.CreateDonor(fName, lName, email, charity.getCharityId(), amount));
 				
 				updateModel();
 			}
@@ -196,7 +197,7 @@ public class Start {
 		JMenuItem mntmOpen = new JMenuItem("Open");
 		mntmOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				DonorRepository dr = Util.OpenRepository();
+				DonorRepository dr = new DonorRepository();
 				
 				if(dr != null)
 				{
@@ -206,14 +207,6 @@ public class Start {
 			}
 		});
 		mnFile.add(mntmOpen);
-		
-		JMenuItem mntmSave = new JMenuItem("Save");
-		mntmSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Util.SaveRepository(donorRepository);
-			}
-		});
-		mnFile.add(mntmSave);
 		mnFile.add(mntmExit);
 	}
 	
@@ -230,9 +223,19 @@ public class Start {
 				d.getFname(),
 				d.getLname(),
 				d.getEmail(),
-				d.getCharity().name(),
+				d.getCharity(),
 				formatter.format(d.getAmtDonated())
 			});
 		}
 	}
+	
+	private void populateCharities()
+	{
+		for(Charity c : this.donorRepository.getAllCharities())
+		{
+			this.cmbCharity.addItem(c);
+		}
+	}
+	
+	
 }

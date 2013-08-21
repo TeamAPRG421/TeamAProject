@@ -1,12 +1,26 @@
 package Logic;
 
-import java.io.Serializable;
-
-public enum Charity implements Serializable {
+public class Charity {
 	
-	JDRF,
-	Red_Cross,
-	Habitat_Humanity,
+	private int CharityId;
+	private String CharityName;
+	public int getCharityId() {
+		return CharityId;
+	}
+	public void setCharityId(int charityId) {
+		CharityId = charityId;
+	}
+	public String getCharityName() {
+		return CharityName;
+	}
+	public void setCharityName(String charityName) {
+		CharityName = charityName;
+	}
 	
+	
+	public String toString()
+	{
+		return this.CharityName;
+	}
 
 }

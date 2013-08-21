@@ -1,20 +1,27 @@
 package Logic;
 
-import java.io.Serializable;
-
-public class Donor implements Serializable {
+public class Donor{
 	private String fname;
 	private String lname;
 	private String email;
-	private Charity charity;
+	private String charity;
+	private int charityId;
 	private float amtDonated;
 	
 	
+	public void setCharityId(int id)
+	{
+		this.charityId = id;
+	}
 	
-	public Charity getCharity() {
+	public int getCharityId()
+	{
+		return this.charityId;
+	}
+	public String getCharity() {
 		return charity;
 	}
-	public void setCharity(Charity charity) {
+	public void setCharity(String charity) {
 		this.charity = charity;
 	}
 	public float getAmtDonated() {
